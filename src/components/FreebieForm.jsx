@@ -2,6 +2,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { trackMetaEvent } from "../services/tracking";
+import { sendLeadToSheet } from "../services/googleSheets";
+
+
+// 👉 Ruta del PDF en /public
+const PDF_URL = "/mini-ritual-cierre-2025.pdf";
 
 // Mapa ISO2 -> código telefónico (country.io/phone.json)
 const PHONE_CODES = {
@@ -146,6 +151,16 @@ export function FreebieForm() {
 
   const selectedDial = normalizeDialCode(selectedCountry.dial);
 
+  // 👉 Función para disparar la descarga del PDF
+  function triggerDownload() {
+    const link = document.createElement("a");
+    link.href = PDF_URL;
+    link.download = "Mini Ritual de Cierre 2025 - Femmeva.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   // Validación de todos los campos (incluye número)
   function validate() {
     const newErrors = {};
@@ -185,6 +200,7 @@ export function FreebieForm() {
 
     const digitsOnly = phone.replace(/\D/g, "");
     const fullPhone = `${selectedDial} ${digitsOnly}`;
+    const sheetPhone = `${selectedDial.replace("+", "")} ${digitsOnly}`;
 
     // Enviar evento a tu API / Meta CAPI
     await trackMetaEvent({
@@ -195,7 +211,7 @@ export function FreebieForm() {
       value: 0,
       currency: "USD",
       eventId: "freebie-optin",
-      phone: fullPhone,
+      phone:sheetPhone,
     });
 
     // Guardar datos en localStorage
@@ -203,7 +219,17 @@ export function FreebieForm() {
     localStorage.setItem("femmeva_email", email);
     localStorage.setItem("femmeva_phone", fullPhone);
 
-    // Redirigir
+    // 3) Enviar datos a Google Sheets (no esperamos, para no frenar la UX)
+    void sendLeadToSheet({
+      nombre: name,
+      email,
+      celular: fullPhone,
+    });
+
+    // 👉 1) Descargar PDF automáticamente
+    triggerDownload();
+
+    // 👉 2) Redirigir a la página de gracias
     navigate("/gracias");
   }
 
