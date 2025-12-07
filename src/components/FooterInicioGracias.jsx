@@ -60,7 +60,6 @@ function FooterInicioGracias() {
 
           {/* QUICK NAV */}
           <div className="flex flex-wrap gap-6 text-sm text-white">
-            {/* 🔁 Aquí el cambio de copy */}
             <button
               onClick={handleGoToCTA}
               className="hover:text-pink-200 underline underline-offset-4 transition-colors"
@@ -76,21 +75,23 @@ function FooterInicioGracias() {
         {/* BOTTOM */}
         <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           {/* COPYRIGHT */}
-          <div className="text-sm text-white/90 leading-relaxed max-w-xs">
+          <div className="max-w-xs text-sm leading-relaxed text-white/90">
             © {new Date().getFullYear()} Ritual Fin de Año · FemmevaOfficial.
             Todos los derechos reservados.
           </div>
 
           {/* DISCLAIMER */}
-          <p className="max-w-md text-[12px] text-slate-300 leading-relaxed">
+          <p className="max-w-md text-[12px] leading-relaxed text-slate-300">
             Este contenido no reemplaza procesos terapéuticos ni asesoría
             profesional. Es una herramienta de reflexión y crecimiento personal
             para acompañar tu proceso interno.
           </p>
 
           {/* SOCIALS */}
-          <div className="flex items-center gap-4 text-sm text-white">
-            <span className="text-slate-300 text-sm">Sígueme:</span>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-white">
+            <span className="basis-full text-sm text-slate-300 md:basis-auto">
+              Sígueme:
+            </span>
 
             {/* Instagram */}
             <a

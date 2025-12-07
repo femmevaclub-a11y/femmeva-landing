@@ -22,6 +22,12 @@ const testimonials = [
     role: "Guía de crecimiento personal",
     text: "Venía arrastrando relaciones, culpas y pendientes. El ritual me dio un espacio seguro para soltar. Terminé con una sensación de ligereza y con un plan claro para empezar el 2026 desde mi poder.",
   },
+  {
+    name: "Laura",
+    location: "Buenos Aires · 35 años",
+    role: "Lista de hábitos iniciales",
+    text: "Siempre sentí que empezar nuevos hábitos era una lucha conmigo misma. Esta vez, con la guía, pude entender por qué nunca me sostenían y cómo crear rutinas que realmente encajaran con mi vida. Por primera vez, no me forcé… me acompañé. Mis días se volvieron más ligeros, más ordenados y, sobre todo, más míos.",
+  },
 ];
 
 function TestimonialsSection() {
@@ -50,19 +56,20 @@ function TestimonialsSection() {
         en vez de dejarlo en piloto automático.
       </Motion.p>
 
+      {/* 2 columnas desde md → 2 arriba, 2 abajo */}
       <Motion.div
-        className="grid gap-6 md:grid-cols-3"
+        className="grid items-stretch gap-6 md:grid-cols-2"
         variants={staggerContainer}
       >
         {testimonials.map((t, index) => (
           <Motion.article
             key={t.name + index}
-            className="flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-slate-900/60 p-5 text-sm text-slate-100 shadow-[0_0_40px_rgba(15,23,42,0.7)]"
+            className="flex h-full flex-col rounded-3xl border border-white/10 bg-slate-900/60 p-5 text-sm text-slate-100 shadow-[0_0_40px_rgba(15,23,42,0.7)]"
             variants={fadeInUp}
             custom={0.15 + index * 0.05}
           >
             {/* Header */}
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-6 flex items-start gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-fuchsia-500 to-purple-500 text-xs font-semibold uppercase tracking-wide text-white">
                 {t.name
                   .split(" ")
@@ -80,26 +87,24 @@ function TestimonialsSection() {
             </div>
 
             {/* Quote */}
-            <div className="relative mb-4 flex-1">
-              <span className="pointer-events-none select-none text-4xl leading-none text-pink-300/30">
+            <div className="flex-1">
+              <span className="mb-2 block text-3xl leading-none text-pink-300/30">
                 “
               </span>
-              <p className="-mt-3 pl-4 text-[13px] leading-relaxed text-slate-100/95">
+              <p className="text-[13px] leading-relaxed text-slate-100/95">
                 {t.text}
               </p>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-2 text-[11px] text-slate-400">
-              <div className="flex items-center gap-1">
-                <span className="text-xs">★★★★★</span>
-                <span className="text-[10px] uppercase tracking-[0.18em] text-slate-400/80 mr-3">
-                  EXPERIENCIA TRANSFORMADORA
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500">
+            <div className="mt-6 border-t border-white/5 pt-3 text-center">
+              <p className="text-xs text-slate-200">★★★★★</p>
+              <p className="mt-1 text-[9px] uppercase tracking-[0.16em] text-slate-400/80 leading-snug">
+                Experiencia transformadora
+              </p>
+              <p className="mt-2 text-[9px] text-slate-500">
                 Diciembre 2025 · Ritual Femmeva
-              </span>
+              </p>
             </div>
           </Motion.article>
         ))}
