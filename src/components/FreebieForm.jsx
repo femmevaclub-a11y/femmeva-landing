@@ -344,11 +344,10 @@ export function FreebieForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-
   const [selectedCountryCode, setSelectedCountryCode] = useState("CO"); // 🇨🇴 por defecto
   const [showCountries, setShowCountries] = useState(false);
-
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 evita múltiples envíos
 
   const selectedCountry =
     COUNTRY_OPTIONS.find((c) => c.code === selectedCountryCode) ||
@@ -401,48 +400,56 @@ export function FreebieForm() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (isSubmitting) return;       // 👈 ignora clicks mientras envía
     if (!validate()) return;
 
-    const digitsOnly = phone.replace(/\D/g, "");
-    const fullPhone = `${selectedDial} ${digitsOnly}`;
-    const sheetPhone = `${selectedDial.replace("+", "")} ${digitsOnly}`;
+    setIsSubmitting(true);
 
-    // Enviar evento a tu API / Meta CAPI
-    await trackMetaEvent({
-      eventName: "lead",
-      name, // 👈 ahora enviamos el nombre
-      email,
-      source: "freebie-mini-ritual", // 👈 origen del lead
-      value: 0,
-      currency: "USD",
-      eventId: "freebie-optin",
-      phone: sheetPhone,
-    });
-
-    // Guardar datos en localStorage
-    localStorage.setItem("femmeva_name", name);
-    localStorage.setItem("femmeva_email", email);
-    localStorage.setItem("femmeva_phone", fullPhone);
-
-    // 3) Enviar datos a Google Sheets (no esperamos, para no frenar la UX)
     try {
-      await sendLeadToSheet({
-        nombre: name,
+      const digitsOnly = phone.replace(/\D/g, "");
+      const fullPhone = `${selectedDial} ${digitsOnly}`; // para Meta / localStorage
+      const sheetPhone = digitsOnly;                     // solo dígitos para Sheets
+
+      // Enviar evento a tu API / Meta CAPI
+      await trackMetaEvent({
+        eventName: "lead",
+        name,
         email,
-        celular: sheetPhone,
+        source: "freebie-mini-ritual",
+        value: 0,
+        currency: "USD",
+        eventId: "freebie-optin",
+        phone: fullPhone,
       });
-    } catch (err) {
-      console.error(
-        "No se pudo enviar a Sheets, pero seguimos con el flujo",
-        err
-      );
+
+      // Guardar datos en localStorage
+      localStorage.setItem("femmeva_name", name);
+      localStorage.setItem("femmeva_email", email);
+      localStorage.setItem("femmeva_phone", fullPhone);
+
+      // Enviar datos a Google Sheets y ESPERAR (importante para iPhone)
+      try {
+        await sendLeadToSheet({
+          nombre: name,
+          email,
+          celular: sheetPhone,
+        });
+      } catch (err) {
+        console.error(
+          "No se pudo enviar a Sheets, pero seguimos con el flujo",
+          err
+        );
+      }
+
+      // Descargar PDF
+      triggerDownload();
+
+      // Redirigir a la página de gracias
+      navigate("/gracias");
+    } finally {
+      // Si quieres que NO se pueda enviar nunca más, comenta esta línea
+      setIsSubmitting(false);
     }
-
-    // 👉 1) Descargar PDF automáticamente
-    triggerDownload();
-
-    // 👉 2) Redirigir a la página de gracias
-    navigate("/gracias");
   }
 
   return (
@@ -575,13 +582,19 @@ export function FreebieForm() {
       {/* BOTÓN */}
       <button
         type="submit"
-        className="w-full rounded-xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600
+        disabled={isSubmitting}
+        className={`w-full rounded-xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600
                    py-3 font-semibold text-sm shadow-lg shadow-pink-500/20
                    hover:shadow-pink-500/30 hover:brightness-110 
-                   transition-all duration-300 hover:scale-[1.01]
-                   text-white"
+                   transition-all duration-300
+                   text-white
+                   ${
+                     isSubmitting
+                       ? "opacity-60 cursor-not-allowed hover:scale-100"
+                       : "hover:scale-[1.01]"
+                   }`}
       >
-        Descargar Mini Ritual GRATIS
+        {isSubmitting ? "Enviando..." : "Descargar Mini Ritual GRATIS"}
       </button>
     </form>
   );
