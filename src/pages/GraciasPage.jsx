@@ -86,8 +86,8 @@ export default function GraciasPage() {
   const isLastSeconds = timeLeft <= 10;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <main className="mx-auto max-w-4xl px-4 py-16 text-center">
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-950 text-white">
+      <main className="mx-auto max-w-4xl sm:max-w-2xl px-4 py-16 text-center">
         <p className="text-xs uppercase tracking-[0.2em] text-pink-300 mb-4">
           Femmeva • Gracias
         </p>

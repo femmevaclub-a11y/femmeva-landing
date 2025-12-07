@@ -9,10 +9,10 @@ import FooterInicioGracias from "../components/FooterInicioGracias";
 
 export default function FreebiePage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-950 text-white">
       {/* <Navbar /> */}
 
-      <main className="mx-auto max-w-5xl px-4 py-12 md:py-20">
+      <main className="mx-auto max-w-5xl sm:max-w-2xl px-4 py-12 md:py-20">
         <Motion.div
           initial="hidden"
           whileInView="visible"

@@ -27,13 +27,13 @@ function RitualPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-950 text-slate-100 ">
       {/* Fondo degradado global */}
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,_#f472b680,_transparent_60%),radial-gradient(circle_at_bottom,_#6366f180,_transparent_60%)]" />
 
       <Navbar onCTAClick={handleScrollToCTA} />
 
-      <main className="mx-auto max-w-5xl px-4 pb-20 pt-10 md:pt-16">
+      <main className="mx-auto max-w-5xl sm:max-w-2xl px-4 pb-20 pt-10 md:pt-16">
         <HeroSection
           checkoutUrl={CHECKOUT_URL}
           launchPrice={LAUNCH_PRICE}
