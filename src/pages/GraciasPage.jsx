@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion as Motion } from "framer-motion";
 import { trackMetaEvent } from "../services/tracking";
+import FooterInicioGracias from "../components/FooterInicioGracias";
 
 // Ajusta esto con tu checkout real de Hotmart
 const HOTMART_CHECKOUT_URL =
@@ -98,7 +99,7 @@ export default function GraciasPage() {
         </h1>
 
         <p className="text-sm md:text-base text-slate-300 mb-8 max-w-2xl mx-auto">
-          En unos minutos lo recibirás en tu correo. Mientras tanto, quiero
+          En unos segundos lo recibirás descagado en tu dispositivo. Mientras tanto, quiero
           mostrarte algo que puede transformar por completo cómo cierras este
           año.
         </p>
@@ -218,6 +219,8 @@ export default function GraciasPage() {
             </div>
           </div>
         </div>
+        <FooterInicioGracias onCTAClick={() => window.location.href = "https://femmevaofficial.com/ritual"} />
+
       </main>
     </div>
   );

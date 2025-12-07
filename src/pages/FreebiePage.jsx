@@ -4,6 +4,7 @@ import { motion as Motion } from "framer-motion";
 import { FreebieForm } from "../components/FreebieForm";
 import miniRitualMockup from "../assets/mini-ritual.png";
 import { fadeInUp, staggerContainer } from "../components/animations";
+import FooterInicioGracias from "../components/FooterInicioGracias";
 // import Navbar from "../components/Navbar";
 
 export default function FreebiePage() {
@@ -105,6 +106,8 @@ export default function FreebiePage() {
             </div>
           </Motion.div>
         </Motion.div>
+        <FooterInicioGracias onCTAClick={() => window.location.href = "https://femmevaofficial.com/ritual"} />
+
       </main>
     </div>
   );
