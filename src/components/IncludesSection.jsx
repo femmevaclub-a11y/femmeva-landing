@@ -20,7 +20,7 @@ const items = [
       "Preguntas profundas y espacios de escritura consciente para mirar tu año con honestidad, sin juzgarte, pero sin maquillarlo.",
   },
   {
-    title: "Ritual del fuego y del agua",
+    title: "Ritual del fuego",
     description:
       "Instrucciones claras para usar estos elementos como símbolos de soltar, purificar y renacer desde una energía más ligera.",
   },
