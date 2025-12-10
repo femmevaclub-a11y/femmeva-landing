@@ -16,7 +16,7 @@ import NotForYouSection from "../components/NotForYouSection";
 import TransformationSection from "../components/TransformationSection";
 
 // 🔗 Ajusta esto con tu pasarela real
-const CHECKOUT_URL = "https://pay.hotmart.com/N103276272J?checkoutMode=10";
+const CHECKOUT_URL = "https://pay.hotmart.com/N103276272J";
 const LAUNCH_PRICE = "$9.99 USD";
 const FULL_PRICE = "$69.00 USD";
 
