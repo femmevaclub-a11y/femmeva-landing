@@ -4,48 +4,130 @@ import femmevaLogo from "../assets/femmevalogo.png";
 /* ================== HELPERS ================== */
 const pad2 = (n) => String(n).padStart(2, "0");
 
-function Navbar({ onCTAClick }) {
-  /* ================== TIMER 20 MIN ================== */
-  const STORAGE_KEY = "femmeva_fomo_timer_start";
-  const DURATION_MS = 20 * 60 * 1000; // 20 minutos
+function getLocalMidnight(year, monthIndex, day) {
+  // monthIndex: 0=Jan ... 11=Dec
+  return new Date(year, monthIndex, day, 0, 0, 0, 0).getTime();
+}
 
-  // startTime seguro (no revienta si no hay window/localStorage)
-  const [startTime, setStartTime] = React.useState(() => Date.now());
-  const [timeLeft, setTimeLeft] = React.useState(DURATION_MS);
+function Navbar({ onCTAClick }) {
+  /* ================== TIMER: 31 DIC 00:00 + 5 DÍAS ================== */
+  const STORAGE_KEY = "femmeva_deadline_v1";
+
+  // 31 de diciembre 00:00 (hora local) del año actual
+  const nowInit = Date.now();
+  const currentYear = new Date(nowInit).getFullYear();
+  const BASE_DEADLINE_MS = getLocalMidnight(currentYear, 11, 31); // Dec=11, day=31, 00:00
+
+  const EXTENSION_MS = 5 * 24 * 60 * 60 * 1000; // 5 días
+
+  const [deadline, setDeadline] = React.useState(() => BASE_DEADLINE_MS);
+  const [timeLeft, setTimeLeft] = React.useState(() =>
+    Math.max(0, BASE_DEADLINE_MS - Date.now())
+  );
 
   /* ================== SCROLL PROGRESS ================== */
   const [progress, setProgress] = React.useState(0);
 
-  // Inicializa startTime desde localStorage en cliente
+  // Inicializa deadline desde localStorage (y/o calcula el correcto)
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setStartTime(Number(saved));
-      } else {
-        const now = Date.now();
-        window.localStorage.setItem(STORAGE_KEY, String(now));
-        setStartTime(now);
+    const now = Date.now();
+
+    const computeDefaultDeadline = () => {
+      // Si hoy ya pasó el 31 dic 00:00 de este año, pasa a 31 dic 00:00 del siguiente año (base)
+      if (now >= BASE_DEADLINE_MS) {
+        const nextYearBase = getLocalMidnight(currentYear + 1, 11, 31);
+        return nextYearBase;
       }
+      return BASE_DEADLINE_MS;
+    };
+
+    try {
+      const savedRaw = window.localStorage.getItem(STORAGE_KEY);
+
+      if (savedRaw) {
+        const saved = JSON.parse(savedRaw);
+        const savedDeadline = Number(saved?.deadline);
+        const extended = Boolean(saved?.extended);
+
+        // Si el deadline guardado es válido, úsalo
+        if (Number.isFinite(savedDeadline) && savedDeadline > 0) {
+          // Si ya venció:
+          // - si NO estaba extendido => aplica extensión de 5 días desde ese deadline
+          // - si ya estaba extendido => no lo vuelvas a extender (solo queda en 0)
+          if (now >= savedDeadline) {
+            if (!extended) {
+              const newDeadline = savedDeadline + EXTENSION_MS;
+              const payload = { deadline: newDeadline, extended: true };
+              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+              setDeadline(newDeadline);
+              setTimeLeft(Math.max(0, newDeadline - now));
+              return;
+            }
+            setDeadline(savedDeadline);
+            setTimeLeft(0);
+            return;
+          }
+
+          // Aún no vence
+          setDeadline(savedDeadline);
+          setTimeLeft(Math.max(0, savedDeadline - now));
+          return;
+        }
+      }
+
+      // Si no hay guardado o es inválido, crea uno nuevo
+      const freshDeadline = computeDefaultDeadline();
+      const payload = { deadline: freshDeadline, extended: false };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      setDeadline(freshDeadline);
+      setTimeLeft(Math.max(0, freshDeadline - now));
     } catch {
-      // si el navegador bloquea localStorage, igual funciona en memoria
-      setStartTime(Date.now());
+      // Si localStorage falla, funciona igual sin persistencia
+      const fallback = now >= BASE_DEADLINE_MS
+        ? getLocalMidnight(currentYear + 1, 11, 31)
+        : BASE_DEADLINE_MS;
+
+      setDeadline(fallback);
+      setTimeLeft(Math.max(0, fallback - now));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Actualiza timer
+  // Tick cada 1s + reinicio a extensión cuando llegue a 0
   React.useEffect(() => {
     const tick = () => {
-      const remaining = Math.max(0, DURATION_MS - (Date.now() - startTime));
+      const now = Date.now();
+      const remaining = Math.max(0, deadline - now);
       setTimeLeft(remaining);
+
+      // Si llegó a 0, intentamos extender 5 días SOLO una vez
+      if (remaining === 0 && typeof window !== "undefined") {
+        try {
+          const savedRaw = window.localStorage.getItem(STORAGE_KEY);
+          const saved = savedRaw ? JSON.parse(savedRaw) : null;
+          const alreadyExtended = Boolean(saved?.extended);
+
+          if (!alreadyExtended) {
+            const newDeadline = deadline + EXTENSION_MS;
+            window.localStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({ deadline: newDeadline, extended: true })
+            );
+            setDeadline(newDeadline);
+            setTimeLeft(Math.max(0, newDeadline - now));
+          }
+        } catch {
+          // si falla storage, no pasa nada
+        }
+      }
     };
 
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [DURATION_MS, startTime]);
+  }, [deadline]);
 
   // Scroll progress
   React.useEffect(() => {
@@ -64,8 +146,11 @@ function Navbar({ onCTAClick }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Formato DD:HH:MM:SS (porque ahora es countdown largo)
   const totalSeconds = Math.floor(timeLeft / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const days = Math.floor(totalSeconds / (24 * 3600));
+  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
   return (
@@ -110,7 +195,7 @@ function Navbar({ onCTAClick }) {
           </p>
 
           <p className="mt-1 text-3xl font-extrabold text-pink-400 drop-shadow-[0_0_14px_rgba(236,72,153,0.9)]">
-            {pad2(minutes)}:{pad2(seconds)}
+            {pad2(days)}:{pad2(hours)}:{pad2(minutes)}:{pad2(seconds)}
           </p>
 
           <button
