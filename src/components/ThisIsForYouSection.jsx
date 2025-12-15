@@ -4,15 +4,25 @@ import { motion as Motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "./animations";
 
 const items = [
-  "Sientes que este año se te pasó “entre las manos” y no quieres repetir la misma sensación en el 2026.",
-  "Has intentado hacer rituales o listas de metas antes, pero terminas abandonándolas a las pocas semanas.",
-  "Estás cansada de cargar con situaciones, personas o hábitos que sabes que ya no van contigo.",
-  "Quieres empezar el nuevo año desde tu poder femenino, no desde el agotamiento ni el piloto automático.",
-  "Te cuesta ser constante, pero estás lista para hacer al menos UN ritual profundo y honesto contigo misma.",
-  "Sientes que mereces más abundancia, calma y claridad, pero no sabes por dónde empezar.",
+  "Sientes que 2025 se te fue rápido y no quieres entrar a 2026 arrastrando lo mismo.",
+  "Te pasa que empiezas con toda… y en febrero ya abandonaste metas y hábitos.",
+  "Hay historias, culpas o relaciones que sigues cargando y ya no quieres más.",
+  "Quieres iniciar el año con claridad y foco, no con ansiedad y piloto automático.",
+  "No te cuesta soñar: te cuesta sostener. Y estás lista para un proceso guiado.",
+  "Sabes que mereces calma y abundancia (real), pero necesitas un camino concreto para empezar.",
 ];
 
 function ThisIsForYouSection() {
+  const handleScrollToCta = () => {
+    const el =
+      document.getElementById("cta-section") ||
+      document.getElementById("buy-section") ||
+      document.getElementById("pricing-section") ||
+      document.getElementById("checkout-section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <Motion.section
       className="mt-20"
@@ -22,27 +32,28 @@ function ThisIsForYouSection() {
       variants={staggerContainer}
     >
       <Motion.div
-        className="mb-6 space-y-3 max-w-3xl"
+        className="mb-6 max-w-3xl space-y-3"
         variants={fadeInUp}
         custom={0}
       >
         <p className="inline-flex items-center rounded-full bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-200">
-          Para quién es este ritual
+          Para quién es
         </p>
-        <h2 className="text-xl font-semibold text-slate-50 md:text-2xl">
+
+        <h2 className="text-2xl font-semibold text-slate-50 md:text-3xl">
           Este ritual es para ti si…
         </h2>
-        <p className="text-sm text-slate-300">
-          No es un PDF más que acumulas en tu carpeta de descargas. Es un
-          espacio para mujeres que quieren mirar su vida con honestidad y
-          empezar el 2026 con intención.
+
+        <p className="text-sm text-slate-300 md:text-base">
+          Si te reconoces aquí, no necesitas “otro comienzo” — necesitas{" "}
+          <span className="font-semibold text-pink-200">
+            un cierre real
+          </span>{" "}
+          para empezar el año con dirección.
         </p>
       </Motion.div>
 
-      <Motion.div
-        className="grid gap-4 md:grid-cols-2"
-        variants={staggerContainer}
-      >
+      <Motion.div className="grid gap-4 md:grid-cols-2" variants={staggerContainer}>
         {items.map((item, index) => (
           <Motion.div
             key={item}
@@ -53,11 +64,28 @@ function ThisIsForYouSection() {
             <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-400/20 text-xs text-emerald-200">
               ✔
             </div>
-            <p className="text-xs leading-relaxed text-slate-200">
-              {item}
-            </p>
+            <p className="text-xs leading-relaxed text-slate-200">{item}</p>
           </Motion.div>
         ))}
+      </Motion.div>
+
+      {/* Cierre + CTA */}
+      <Motion.div
+        className="mt-8 flex flex-col gap-3 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 sm:flex-row sm:items-center sm:justify-between"
+        variants={fadeInUp}
+        custom={0.75}
+      >
+        <p className="text-sm text-slate-200/90 md:text-base">
+          Si estás lista para empezar diferente, empieza cerrando bien.
+        </p>
+
+        <button
+          type="button"
+          onClick={handleScrollToCta}
+          className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-400"
+        >
+          Sí, es para mí
+        </button>
       </Motion.div>
     </Motion.section>
   );

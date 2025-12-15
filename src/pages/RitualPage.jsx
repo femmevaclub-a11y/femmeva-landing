@@ -14,6 +14,7 @@ import ResultsSection from "../components/ResultsSection";
 import ThisIsForYouSection from "../components/ThisIsForYouSection";
 import NotForYouSection from "../components/NotForYouSection";
 import TransformationSection from "../components/TransformationSection";
+import MiniCTASection from "../components/MiniCTASection";
 
 // 🔗 Ajusta esto con tu pasarela real
 const CHECKOUT_URL = "https://pay.hotmart.com/N103276272J";
@@ -41,19 +42,21 @@ function RitualPage() {
         />
         <ProblemSection />
         <SolutionSection />
-        <IncludesSection />
-        <PreviewSection />
+        <TransformationSection />
         <ResultsSection />
+        <CTASection />
+        <IncludesSection />
+        <PreviewSection />        
         <TestimonialsSection />
         <ThisIsForYouSection />
-        <NotForYouSection />
-        <TransformationSection />
+        <NotForYouSection />        
+        <FAQSection />
         <CTASection
           checkoutUrl={CHECKOUT_URL}
           launchPrice={LAUNCH_PRICE}
           fullPrice={FULL_PRICE}
         />
-        <FAQSection />
+        
       </main>
 
       <Footer onCTAClick={handleScrollToCTA} />

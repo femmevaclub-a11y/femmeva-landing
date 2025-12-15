@@ -3,61 +3,68 @@ import React from "react";
 import { motion as Motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "./animations";
 
-// Ahora cada item tiene título y subtítulo
+// Señales (más filosas y específicas)
 const items = [
   {
-    title: "Cansancio emocional o mental",
-    subtitle: "Sientes que tu energía no te alcanza para nada más.",
+    title: "Te sientes agotada… aunque “no hiciste tanto”",
+    subtitle:
+      "No es pereza: es carga emocional acumulada que no has descargado.",
   },
   {
-    title: "Confusión sobre tus decisiones",
-    subtitle: "No sabes si hiciste lo correcto este año ni hacia dónde ir.",
+    title: "Tu mente no se apaga (rumias, dudas, escenarios)",
+    subtitle:
+      "Piensas y piensas… y aún así no encuentras claridad para decidir.",
   },
   {
-    title: "Ciclos abiertos que no sabes cómo cerrar",
-    subtitle: "Relaciones, metas o emociones que quedaron suspendidas.",
+    title: "Hay cosas abiertas que evitas mirar",
+    subtitle:
+      "Relaciones, pérdidas, culpas o capítulos que sigues cargando en silencio.",
   },
   {
-    title: "Metas inconclusas que se quedaron a medias",
-    subtitle: "Ese proyecto que querías terminar… y nunca lo hiciste.",
+    title: "Te prometiste cambios y volviste a lo mismo",
+    subtitle:
+      "Metas a medias, hábitos rotos, impulso al inicio… y caída después.",
   },
   {
-    title: "Energía pesada o sensación de estancamiento",
-    subtitle: "Como si algo te detuviera pero no sabes qué es.",
+    title: "Sientes estancamiento: como si algo te frenara",
+    subtitle:
+      "Avanzas por fuera, pero por dentro algo sigue “pendiente” y pesa.",
   },
   {
-    title: "Ganas profundas de empezar el 2026 diferente",
-    subtitle: "Sabes que necesitas un cambio real, no superficial.",
+    title: "Sabes que 2026 no puede empezar igual",
+    subtitle:
+      "No quieres más motivación: quieres un cierre real para iniciar liviana.",
   },
 ];
 
 function ProblemSection() {
   return (
     <Motion.section
-      className="mt-20 space-y-12"
+      className="mt-20 space-y-10"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
       variants={staggerContainer}
     >
-      {/* TÍTULO PRINCIPAL */}
+      {/* TÍTULO PRINCIPAL (más tensión) */}
       <Motion.h2
         variants={fadeInUp}
         className="text-3xl font-semibold leading-snug text-slate-50 md:text-4xl"
       >
-        “¿Sientes que este año se te escapó de las manos?”
+        No estás “sin ganas”. Estás cargando cosas abiertas.
       </Motion.h2>
 
-      {/* SUBTÍTULO ORIGINAL */}
+      {/* SUBTÍTULO (mejor encuadre) */}
       <Motion.p
         variants={fadeInUp}
         custom={0.1}
         className="text-sm text-slate-200/90 md:text-base"
       >
-        Si estás cerrando el 2025 con…
+        Si cierras el año con alguna de estas señales, tu mente no va a
+        “resetear” sola el 1 de enero:
       </Motion.p>
 
-      {/* TIMELINE LUNAR ANIMADO */}
+      {/* TIMELINE */}
       <Motion.div
         variants={staggerContainer}
         className="relative mx-auto max-w-2xl"
@@ -103,13 +110,13 @@ function ProblemSection() {
                 />
               </span>
 
-              {/* TÍTULO DEL ÍTEM */}
+              {/* TÍTULO */}
               <p className="text-[14px] font-medium text-slate-100 md:text-[15px]">
                 {item.title}
               </p>
 
-              {/* SUBTÍTULO DEL ÍTEM */}
-              <p className="mt-1 text-[13px] text-slate-300/80 md:text-[14px] leading-relaxed">
+              {/* SUBTÍTULO */}
+              <p className="mt-1 text-[13px] leading-relaxed text-slate-300/80 md:text-[14px]">
                 {item.subtitle}
               </p>
             </Motion.div>
@@ -117,13 +124,33 @@ function ProblemSection() {
         </div>
       </Motion.div>
 
-      {/* SUBTÍTULO FINAL ORIGINAL */}
+      {/* BLOQUE DE CONSECUENCIA (alto impacto) */}
+      <Motion.div
+        variants={fadeInUp}
+        custom={0.55}
+        className="rounded-3xl bg-white/5 p-5 ring-1 ring-white/10"
+      >
+        <p className="text-sm font-semibold text-slate-50 md:text-base">
+          La verdad incómoda:
+        </p>
+        <p className="mt-2 text-sm text-slate-200/90 md:text-base">
+          Si no cierras este año de forma consciente, no “se va”…
+          <span className="font-semibold text-pink-200">
+            {" "}
+            se queda contigo{" "}
+          </span>
+          y se repite en tus decisiones, tus emociones y tus relaciones en 2026.
+        </p>
+      </Motion.div>
+
+      {/* CIERRE + PUENTE */}
       <Motion.p
         variants={fadeInUp}
-        custom={0.6}
+        custom={0.65}
         className="text-sm font-medium text-pink-200 md:text-base"
       >
-        Entonces este ritual es para ti.
+        Este ritual es el cierre guiado que te faltaba para empezar el nuevo año
+        liviana, clara y enfocada.
       </Motion.p>
     </Motion.section>
   );

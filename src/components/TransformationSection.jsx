@@ -6,25 +6,38 @@ import { fadeInUp, staggerContainer } from "./animations";
 const steps = [
   {
     step: "Paso 1",
-    title: "Dices “sí” a darte este espacio",
+    title: "Dices “sí” y recibes acceso inmediato",
     description:
-      "Decides salir del piloto automático y regalarte un momento de cierre consciente. Compras la guía y recibes el acceso inmediato en tu correo.",
+      "Haces la compra y recibes el acceso al instante (página de confirmación + correo). Lo guardas en tu celular o computador y lo tienes listo para cuando decidas hacerlo.",
+    micro: "✔ Pago seguro · ✔ Descarga inmediata · ✔ Garantía 7 días",
   },
   {
     step: "Paso 2",
-    title: "Eliges tu momento y haces el ritual",
+    title: "Eliges tu momento y sigues el ritual guiado",
     description:
-      "Buscas un espacio tranquilo, preparas tu ambiente (si quieres con velas, música, té) y sigues el paso a paso de la guía, a tu ritmo, sintiendo cada parte.",
+      "Buscas un espacio tranquilo, preparas tu ambiente si quieres (vela, música, té) y sigues el paso a paso. No improvisas: la guía te lleva con claridad, a tu ritmo.",
+    micro: "45–60 min · sola o acompañada",
   },
   {
     step: "Paso 3",
-    title: "Cierras el año y reescribes tu historia",
+    title: "Cierras 2025 y sales con claridad + plan",
     description:
-      "Terminas el ritual con más claridad, calma y dirección. No solo hiciste “un ejercicio bonito”, sino que tomaste decisiones internas sobre quién quieres ser en el 2026.",
+      "Terminas más liviana, con decisiones claras: qué sueltas, qué priorizas y cómo empiezas enero. No es inspiración: es cierre emocional + dirección práctica.",
+    micro: "Se siente en: calma, foco y límites",
   },
 ];
 
 function TransformationSection() {
+  const handleScrollToCta = () => {
+    const el =
+      document.getElementById("cta-section") ||
+      document.getElementById("buy-section") ||
+      document.getElementById("pricing-section") ||
+      document.getElementById("checkout-section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <Motion.section
       className="mt-20"
@@ -33,7 +46,7 @@ function TransformationSection() {
       viewport={{ once: true, amount: 0.25 }}
       variants={staggerContainer}
     >
-      {/* HEADER */}
+      {/* Header */}
       <Motion.div
         className="mb-8 max-w-3xl space-y-3 text-slate-50"
         variants={fadeInUp}
@@ -42,17 +55,18 @@ function TransformationSection() {
         <p className="inline-flex items-center rounded-full bg-purple-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-purple-200">
           Tu siguiente versión
         </p>
-        <h2 className="text-xl font-semibold md:text-2xl">
-          Tu transformación comienza en un solo “sí” que te das a ti misma
+
+        <h2 className="text-2xl font-semibold md:text-3xl">
+          Tu transformación empieza con una decisión simple
         </h2>
-        <p className="text-sm text-slate-300">
-          No necesitas tener todo resuelto para empezar. Solo necesitas decidir
-          que este fin de año no lo vas a vivir en automático. El resto, lo
-          hacemos juntas dentro del ritual.
+
+        <p className="text-sm text-slate-300 md:text-base">
+          No necesitas tener todo resuelto. Solo decidir que este cierre de año
+          no lo vas a vivir en automático. El resto te lo guía el ritual.
         </p>
       </Motion.div>
 
-      {/* TIMELINE */}
+      {/* Timeline */}
       <Motion.div
         className="relative grid gap-6 md:grid-cols-3"
         variants={staggerContainer}
@@ -67,7 +81,7 @@ function TransformationSection() {
             custom={0.1 + index * 0.08}
             className="relative flex flex-col gap-2 rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-100 shadow-[0_0_35px_rgba(15,23,42,0.9)] backdrop-blur"
           >
-            {/* Nodo circular */}
+            {/* Nodo */}
             <div className="mb-2 flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-fuchsia-500 to-amber-300 text-[11px] font-semibold text-slate-50 shadow-[0_0_15px_rgba(236,72,153,0.7)]">
                 {index + 1}
@@ -80,28 +94,47 @@ function TransformationSection() {
             <h3 className="text-[15px] font-semibold text-slate-50">
               {item.title}
             </h3>
+
             <p className="text-xs leading-relaxed text-slate-300">
               {item.description}
             </p>
+
+            {/* Micro evidencia */}
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[11px] text-slate-200 ring-1 ring-white/10">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-pink-300" />
+              {item.micro}
+            </div>
           </Motion.div>
         ))}
       </Motion.div>
 
-      {/* TEXTO FINAL ANTES DEL CTA */}
+      {/* Cierre + CTA */}
       <Motion.div
-        className="mt-8 max-w-2xl space-y-2 text-sm text-slate-200"
+        className="mt-10 flex flex-col gap-4 rounded-3xl bg-white/5 p-6 ring-1 ring-white/10"
         variants={fadeInUp}
         custom={0.9}
       >
-        <p>
-          En unos meses puedes mirar atrás y decir “fue un diciembre más”, o
-          recordar este ritual como el momento en el que decidiste tratarte con
-          más amor, más orden y más intención.
+        <p className="text-sm text-slate-200/90 md:text-base">
+          En unos meses puedes mirar atrás y decir “fue un diciembre más”… o
+          recordar este ritual como el momento en que dejaste de postergarte.
         </p>
-        <p className="text-pink-200">
-          La decisión se toma en segundos. Lo que cambia después, se siente todo
-          el año.
+
+        <p className="text-sm font-semibold text-pink-200 md:text-base">
+          La decisión se toma en segundos. Lo que se siente después, dura todo el año.
         </p>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            onClick={handleScrollToCta}
+            className="inline-flex items-center justify-center rounded-full bg-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-500/35 transition hover:bg-pink-400"
+          >
+            Sí, quiero hacerlo
+          </button>
+          <p className="text-xs text-slate-300">
+            ✔ Acceso inmediato · ✔ Pago seguro · ✔ Garantía 7 días
+          </p>
+        </div>
       </Motion.div>
     </Motion.section>
   );
