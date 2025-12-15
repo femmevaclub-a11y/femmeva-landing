@@ -91,7 +91,7 @@ function CTASection({ checkoutUrl, launchPrice, fullPrice }) {
             {/* Urgencia */}
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-pink-100 ring-1 ring-white/10">
               <span>⏳</span>
-              <span>Precio de lanzamiento disponible por tiempo limitado en diciembre.</span>
+              <span>Precio de lanzamiento disponible por tiempo limitado: 20 minutos.</span>
             </div>
 
             {/* CTA + microtrust (mismo ancho, mismas proporciones) */}

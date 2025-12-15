@@ -30,7 +30,7 @@ function HeroSection({ checkoutUrl, launchPrice }) {
           custom={0}
         >
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-          Edición limitada · Solo diciembre
+          Edición limitada · Solo por 20 minutos
         </Motion.div>
 
         <Motion.h1
@@ -91,7 +91,7 @@ function HeroSection({ checkoutUrl, launchPrice }) {
           variants={fadeInUp}
           custom={0.4}
         >
-          ⏳ Precio de lanzamiento por tiempo limitado (diciembre).
+          ⏳ Precio de lanzamiento por tiempo limitado (20 minutos).
         </Motion.p>
 
         <Motion.div

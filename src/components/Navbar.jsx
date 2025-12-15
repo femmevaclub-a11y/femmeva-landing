@@ -4,44 +4,38 @@ import femmevaLogo from "../assets/femmevalogo.png";
 /* ================== HELPERS ================== */
 const pad2 = (n) => String(n).padStart(2, "0");
 
-function getLocalMidnight(year, monthIndex, day) {
-  // monthIndex: 0=Jan ... 11=Dec
-  return new Date(year, monthIndex, day, 0, 0, 0, 0).getTime();
-}
-
 function Navbar({ onCTAClick }) {
-  /* ================== TIMER: 31 DIC 00:00 + 5 DÍAS ================== */
+  /* ================== TIMER: 20 MIN (AUTO-RESET) ================== */
   const STORAGE_KEY = "femmeva_deadline_v1";
+  const DURATION_MS = 20 * 60 * 1000; // 20 minutos
 
-  // 31 de diciembre 00:00 (hora local) del año actual
-  const nowInit = Date.now();
-  const currentYear = new Date(nowInit).getFullYear();
-  const BASE_DEADLINE_MS = getLocalMidnight(currentYear, 11, 31); // Dec=11, day=31, 00:00
-
-  const EXTENSION_MS = 5 * 24 * 60 * 60 * 1000; // 5 días
-
-  const [deadline, setDeadline] = React.useState(() => BASE_DEADLINE_MS);
-  const [timeLeft, setTimeLeft] = React.useState(() =>
-    Math.max(0, BASE_DEADLINE_MS - Date.now())
-  );
+  const [deadline, setDeadline] = React.useState(() => Date.now() + DURATION_MS);
+  const [timeLeft, setTimeLeft] = React.useState(DURATION_MS);
 
   /* ================== SCROLL PROGRESS ================== */
   const [progress, setProgress] = React.useState(0);
 
-  // Inicializa deadline desde localStorage (y/o calcula el correcto)
+  const writeDeadline = React.useCallback((ms) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ deadline: ms }));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const resetTimer = React.useCallback(() => {
+    const newDeadline = Date.now() + DURATION_MS;
+    setDeadline(newDeadline);
+    setTimeLeft(DURATION_MS);
+    writeDeadline(newDeadline);
+  }, [DURATION_MS, writeDeadline]);
+
+  // Inicializa deadline desde localStorage (pero invalida valores viejos/lejanos)
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
     const now = Date.now();
-
-    const computeDefaultDeadline = () => {
-      // Si hoy ya pasó el 31 dic 00:00 de este año, pasa a 31 dic 00:00 del siguiente año (base)
-      if (now >= BASE_DEADLINE_MS) {
-        const nextYearBase = getLocalMidnight(currentYear + 1, 11, 31);
-        return nextYearBase;
-      }
-      return BASE_DEADLINE_MS;
-    };
 
     try {
       const savedRaw = window.localStorage.getItem(STORAGE_KEY);
@@ -49,85 +43,59 @@ function Navbar({ onCTAClick }) {
       if (savedRaw) {
         const saved = JSON.parse(savedRaw);
         const savedDeadline = Number(saved?.deadline);
-        const extended = Boolean(saved?.extended);
 
-        // Si el deadline guardado es válido, úsalo
+        // deadline válido numéricamente
         if (Number.isFinite(savedDeadline) && savedDeadline > 0) {
-          // Si ya venció:
-          // - si NO estaba extendido => aplica extensión de 5 días desde ese deadline
-          // - si ya estaba extendido => no lo vuelvas a extender (solo queda en 0)
-          if (now >= savedDeadline) {
-            if (!extended) {
-              const newDeadline = savedDeadline + EXTENSION_MS;
-              const payload = { deadline: newDeadline, extended: true };
-              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-              setDeadline(newDeadline);
-              setTimeLeft(Math.max(0, newDeadline - now));
-              return;
-            }
-            setDeadline(savedDeadline);
-            setTimeLeft(0);
+          const remaining = savedDeadline - now;
+
+          // ✅ Si el deadline guardado NO corresponde a un timer de 20min (ej: quedó el de dic 31),
+          // lo reseteamos. También si ya expiró.
+          if (remaining <= 0 || remaining > DURATION_MS) {
+            resetTimer();
             return;
           }
 
-          // Aún no vence
+          // OK: usar el guardado
           setDeadline(savedDeadline);
-          setTimeLeft(Math.max(0, savedDeadline - now));
+          setTimeLeft(Math.max(0, remaining));
           return;
         }
       }
 
-      // Si no hay guardado o es inválido, crea uno nuevo
-      const freshDeadline = computeDefaultDeadline();
-      const payload = { deadline: freshDeadline, extended: false };
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      setDeadline(freshDeadline);
-      setTimeLeft(Math.max(0, freshDeadline - now));
+      // Si no hay guardado válido, crea uno nuevo
+      const newDeadline = now + DURATION_MS;
+      writeDeadline(newDeadline);
+      setDeadline(newDeadline);
+      setTimeLeft(DURATION_MS);
     } catch {
-      // Si localStorage falla, funciona igual sin persistencia
-      const fallback = now >= BASE_DEADLINE_MS
-        ? getLocalMidnight(currentYear + 1, 11, 31)
-        : BASE_DEADLINE_MS;
-
-      setDeadline(fallback);
-      setTimeLeft(Math.max(0, fallback - now));
+      // fallback sin storage
+      resetTimer();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [DURATION_MS, resetTimer, writeDeadline]);
 
-  // Tick cada 1s + reinicio a extensión cuando llegue a 0
+  // Tick cada 1s + auto-reset cuando llegue a 0
   React.useEffect(() => {
     const tick = () => {
       const now = Date.now();
-      const remaining = Math.max(0, deadline - now);
+      let remaining = Math.max(0, deadline - now);
+
+      // Si por cualquier razón el remaining se va por encima de 20min, clamp + reset
+      if (remaining > DURATION_MS) {
+        resetTimer();
+        return;
+      }
+
       setTimeLeft(remaining);
 
-      // Si llegó a 0, intentamos extender 5 días SOLO una vez
-      if (remaining === 0 && typeof window !== "undefined") {
-        try {
-          const savedRaw = window.localStorage.getItem(STORAGE_KEY);
-          const saved = savedRaw ? JSON.parse(savedRaw) : null;
-          const alreadyExtended = Boolean(saved?.extended);
-
-          if (!alreadyExtended) {
-            const newDeadline = deadline + EXTENSION_MS;
-            window.localStorage.setItem(
-              STORAGE_KEY,
-              JSON.stringify({ deadline: newDeadline, extended: true })
-            );
-            setDeadline(newDeadline);
-            setTimeLeft(Math.max(0, newDeadline - now));
-          }
-        } catch {
-          // si falla storage, no pasa nada
-        }
+      if (remaining === 0) {
+        resetTimer();
       }
     };
 
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [deadline]);
+  }, [deadline, DURATION_MS, resetTimer]);
 
   // Scroll progress
   React.useEffect(() => {
@@ -146,11 +114,9 @@ function Navbar({ onCTAClick }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Formato DD:HH:MM:SS (porque ahora es countdown largo)
+  // Formato MM:SS (siempre 20min)
   const totalSeconds = Math.floor(timeLeft / 1000);
-  const days = Math.floor(totalSeconds / (24 * 3600));
-  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
   return (
@@ -195,7 +161,7 @@ function Navbar({ onCTAClick }) {
           </p>
 
           <p className="mt-1 text-3xl font-extrabold text-pink-400 drop-shadow-[0_0_14px_rgba(236,72,153,0.9)]">
-            {pad2(days)}:{pad2(hours)}:{pad2(minutes)}:{pad2(seconds)}
+            {pad2(minutes)}:{pad2(seconds)}
           </p>
 
           <button
