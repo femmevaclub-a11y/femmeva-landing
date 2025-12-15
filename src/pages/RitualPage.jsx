@@ -44,19 +44,22 @@ function RitualPage() {
         <SolutionSection />
         <TransformationSection />
         <ResultsSection />
-        <CTASection />
+        <CTASection
+          checkoutUrl={CHECKOUT_URL}
+          launchPrice={LAUNCH_PRICE}
+          fullPrice={FULL_PRICE}
+        />
         <IncludesSection />
-        <PreviewSection />        
+        <PreviewSection />
         <TestimonialsSection />
         <ThisIsForYouSection />
-        <NotForYouSection />        
+        <NotForYouSection />
         <FAQSection />
         <CTASection
           checkoutUrl={CHECKOUT_URL}
           launchPrice={LAUNCH_PRICE}
           fullPrice={FULL_PRICE}
         />
-        
       </main>
 
       <Footer onCTAClick={handleScrollToCTA} />
